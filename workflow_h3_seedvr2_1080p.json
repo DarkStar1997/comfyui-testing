@@ -1,8 +1,8 @@
 {
  "id": "e3f2b845-8f2c-4b5a-9caf-eac1029d3e7e",
  "revision": 0,
- "last_node_id": 262,
- "last_link_id": 323,
+ "last_node_id": 270,
+ "last_link_id": 333,
  "nodes": [
   {
    "id": 92,
@@ -280,7 +280,7 @@
     "previewExposures": []
    },
    "widgets_values": [
-    "Realistic live-action cinematic look, action movie trailer: practical film photography style, a post-rain dusk metropolis, anamorphic lens, shallow depth of field, film grain, city volumetric fog, flying-car traffic between the towers, restrained grading for a premium feel, powerful natural movement.\n\nScene overview: at dusk on a cluster of skyscrapers, the protagonist is being chased, sprinting and leaping across rooftops, jumping from one building's roof to the next with pursuers closing in behind. This is the escape sequence of an action movie trailer: every leap is life-or-death, thrilling and fluid.\n\nStoryboard (each shot a separate scene, rapid cuts, all landing on the musical beats):\n[0s-1.5s] Shot 1: high side angle: the protagonist sprinting at the roof edge, pursuers appearing in the rooftop doorway behind him, wind catching his coat.\n[1s-2.5s] Shot 2: the protagonist leaps across the gap between buildings, body stretching mid-air, towers and flying-car light trails behind him, a slight slow-motion feel.\n[2.5s-4s] Shot 3: he lands, rolls and rises, low-angle shot, tower shadows and fog behind him, he keeps running.\n[4s-5s] Shot 4: freeze: the instant he hits the edge of the next roof and launches into the jump, silhouette, holding.\n\nCamera: each shot its own angle, cuts clean and hard, no dissolves, a slight frame jitter on the jumps.\n\nAudio: wind, rapid footsteps, city ambience, low score underneath, an accent hit on each leap, the score bursting at 4s, closing the last 1s.\n\nNo text, subtitles, logos or watermarks of any kind, no animation or cartoon rendering, no overly-CG look, keep the live-action texture.",
+    "Photorealistic coffee commercial, warm cinematic look, natural window light, shallow depth of field, anamorphic lens, subtle film grain.\n\nScene overview: in a bright modern office, a young male software engineer wearing glasses works at his laptop, code visible on screen. His toaster pops up golden toast, he takes it, then savors his coffee - and the ideas start flowing.\n\n0-3s: establishing shot, he types thoughtfully, a fresh brew steaming beside the laptop.\n3-6s: close-up - the toaster pops the toast up with a cheerful ding, he picks it up, takes a bite, smiles.\n6-10s: he takes his first sip of coffee, eyes light up, camera slowly pushes in as diagrams and ideas seem to spark - he leans in and codes with new energy.\n\nCamera: slow dolly-in on the sip moment, gentle rack focus between toast, cup and face.\nAudio: soft lo-fi beat, keyboard taps, toaster ding, a satisfied exhale, an uplifting musical swell at the end.",
     1344,
     768,
     10,
@@ -326,7 +326,7 @@
    "mode": 0,
    "properties": {},
    "widgets_values": [
-    "## SeedVR2 1080p upscale stage\nThree temporal segments run sequentially (memory-safe on 24GB cap). Outputs land in output/video/wf_seg0..2.\n\nFinal stitch (host):\n`docker exec comfyui sh -c 'cd /ComfyUI/output/video && printf \"%s\\n\" \"file 'wf_seg0_00001_.mp4'\" \"file 'wf_seg1_00001_.mp4'\" \"file 'wf_seg2_00001_.mp4'\" > concat_list.txt && ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy h3_seedvr2_1080p.mp4'`"
+    "## Combined pipeline\nH3 T2V (1344x768, 20 steps) -> Free memory -> 3x SeedVR2 segments -> ConcatSaveVideo.\n\nConcatSaveVideo encodes the 3 segments, joins them with ffmpeg (-c copy) into `h3_seedvr2_1080p_XXXXX_.mp4`, then deletes the temporary segment files and concat list. Only the H3 master and the final upscaled video remain in output/video.\n\nSeed is randomized after every run (control_after_generate = randomize)."
    ]
   },
   {
@@ -415,7 +415,7 @@
     {
      "name": "video",
      "type": "VIDEO",
-     "link": 320
+     "link": 333
     },
     {
      "name": "unload_models",
@@ -437,9 +437,7 @@
     {
      "name": "VIDEO",
      "type": "VIDEO",
-     "links": [
-      321
-     ],
+     "links": [],
      "slot_index": 0
     }
    ]
@@ -1094,46 +1092,10 @@
      "name": "VIDEO",
      "type": "VIDEO",
      "links": [
-      272
+      324,
+      327,
+      330
      ],
-     "slot_index": 0
-    }
-   ]
-  },
-  {
-   "id": 222,
-   "type": "SaveVideo",
-   "pos": [
-    5620,
-    0
-   ],
-   "size": [
-    260,
-    56
-   ],
-   "flags": {},
-   "order": 32,
-   "mode": 0,
-   "properties": {
-    "Node name for S&R": "SaveVideo"
-   },
-   "widgets_values": [
-    "video/wf_seg0",
-    "auto",
-    "auto"
-   ],
-   "inputs": [
-    {
-     "name": "video",
-     "type": "VIDEO",
-     "link": 272
-    }
-   ],
-   "outputs": [
-    {
-     "name": "video",
-     "type": "VIDEO",
-     "links": null,
      "slot_index": 0
     }
    ]
@@ -1711,46 +1673,10 @@
      "name": "VIDEO",
      "type": "VIDEO",
      "links": [
-      296
+      325,
+      328,
+      331
      ],
-     "slot_index": 0
-    }
-   ]
-  },
-  {
-   "id": 242,
-   "type": "SaveVideo",
-   "pos": [
-    5620,
-    620
-   ],
-   "size": [
-    260,
-    56
-   ],
-   "flags": {},
-   "order": 52,
-   "mode": 0,
-   "properties": {
-    "Node name for S&R": "SaveVideo"
-   },
-   "widgets_values": [
-    "video/wf_seg1",
-    "auto",
-    "auto"
-   ],
-   "inputs": [
-    {
-     "name": "video",
-     "type": "VIDEO",
-     "link": 296
-    }
-   ],
-   "outputs": [
-    {
-     "name": "video",
-     "type": "VIDEO",
-     "links": null,
      "slot_index": 0
     }
    ]
@@ -2328,48 +2254,149 @@
      "name": "VIDEO",
      "type": "VIDEO",
      "links": [
-      320
+      326,
+      329,
+      332
      ],
      "slot_index": 0
     }
    ]
   },
   {
-   "id": 262,
-   "type": "SaveVideo",
+   "id": 270,
+   "type": "ConcatSaveVideo",
    "pos": [
-    5620,
-    1240
+    1480,
+    900
    ],
    "size": [
-    260,
-    56
+    320,
+    190
    ],
    "flags": {},
-   "order": 72,
+   "order": 60,
    "mode": 0,
-   "properties": {
-    "Node name for S&R": "SaveVideo"
-   },
-   "widgets_values": [
-    "video/wf_seg2",
-    "auto",
-    "auto"
-   ],
    "inputs": [
     {
-     "name": "video",
+     "name": "video_1",
      "type": "VIDEO",
-     "link": 321
+     "link": 324
+    },
+    {
+     "name": "video_2",
+     "type": "VIDEO",
+     "link": 325
+    },
+    {
+     "name": "video_3",
+     "type": "VIDEO",
+     "link": 326
     }
    ],
    "outputs": [
     {
-     "name": "video",
+     "name": "VIDEO",
      "type": "VIDEO",
-     "links": null,
-     "slot_index": 0
+     "links": []
     }
+   ],
+   "properties": {
+    "Node name for S&R": "ConcatSaveVideo"
+   },
+   "widgets_values": [
+    "video/h3_seedvr2_1080p"
+   ]
+  },
+  {
+   "id": 270,
+   "type": "ConcatSaveVideo",
+   "pos": [
+    1480,
+    900
+   ],
+   "size": [
+    320,
+    190
+   ],
+   "flags": {},
+   "order": 60,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "video_1",
+     "type": "VIDEO",
+     "link": 327
+    },
+    {
+     "name": "video_2",
+     "type": "VIDEO",
+     "link": 328
+    },
+    {
+     "name": "video_3",
+     "type": "VIDEO",
+     "link": 329
+    }
+   ],
+   "outputs": [
+    {
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ConcatSaveVideo"
+   },
+   "widgets_values": [
+    "video/h3_seedvr2_1080p"
+   ]
+  },
+  {
+   "id": 270,
+   "type": "ConcatSaveVideo",
+   "pos": [
+    1480,
+    900
+   ],
+   "size": [
+    320,
+    190
+   ],
+   "flags": {},
+   "order": 60,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "video_1",
+     "type": "VIDEO",
+     "link": 330
+    },
+    {
+     "name": "video_2",
+     "type": "VIDEO",
+     "link": 331
+    },
+    {
+     "name": "video_3",
+     "type": "VIDEO",
+     "link": 332
+    }
+   ],
+   "outputs": [
+    {
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "links": [
+      333
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ConcatSaveVideo"
+   },
+   "widgets_values": [
+    "video/h3_seedvr2_1080p"
    ]
   }
  ],
@@ -2575,14 +2602,6 @@
    "COMBO"
   ],
   [
-   272,
-   221,
-   0,
-   222,
-   0,
-   "VIDEO"
-  ],
-  [
    273,
    205,
    0,
@@ -2765,14 +2784,6 @@
    241,
    3,
    "COMBO"
-  ],
-  [
-   296,
-   241,
-   0,
-   242,
-   0,
-   "VIDEO"
   ],
   [
    297,
@@ -2959,22 +2970,6 @@
    "COMBO"
   ],
   [
-   320,
-   261,
-   0,
-   206,
-   0,
-   "VIDEO"
-  ],
-  [
-   321,
-   206,
-   0,
-   262,
-   0,
-   "VIDEO"
-  ],
-  [
    322,
    140,
    0,
@@ -2989,6 +2984,86 @@
    92,
    0,
    "VIDEO"
+  ],
+  [
+   324,
+   221,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   325,
+   241,
+   0,
+   270,
+   1,
+   "VIDEO"
+  ],
+  [
+   326,
+   261,
+   0,
+   270,
+   2,
+   "VIDEO"
+  ],
+  [
+   327,
+   221,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   328,
+   241,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   329,
+   261,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   330,
+   221,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   331,
+   241,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   332,
+   261,
+   0,
+   270,
+   0,
+   "VIDEO"
+  ],
+  [
+   333,
+   270,
+   0,
+   206,
+   0,
+   "VIDEO"
   ]
  ],
  "groups": [],
@@ -2999,7 +3074,7 @@
     "version": 1,
     "state": {
      "lastGroupId": 6,
-     "lastNodeId": 140,
+     "lastNodeId": 145,
      "lastLinkId": 248,
      "lastRerouteId": 0
     },
@@ -4412,6 +4487,43 @@
       },
       "color": "#322",
       "bgcolor": "#533"
+     },
+     {
+      "id": 145,
+      "type": "RandomSeed",
+      "pos": [
+       -700,
+       5000
+      ],
+      "size": [
+       280,
+       100
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+       {
+        "name": "seed",
+        "type": "INT",
+        "link": 246
+       }
+      ],
+      "outputs": [
+       {
+        "name": "seed",
+        "type": "INT",
+        "links": [
+         207
+        ]
+       }
+      ],
+      "properties": {
+       "Node name for S&R": "RandomSeed"
+      },
+      "widgets_values": [
+       true
+      ]
      }
     ],
     "groups": [
@@ -4647,8 +4759,8 @@
      },
      {
       "id": 207,
-      "origin_id": -10,
-      "origin_slot": 6,
+      "origin_id": 145,
+      "origin_slot": 0,
       "target_id": 129,
       "target_slot": 0,
       "type": "INT"
@@ -4810,6 +4922,14 @@
       "origin_id": -10,
       "origin_slot": 14,
       "target_id": 138,
+      "target_slot": 0,
+      "type": "INT"
+     },
+     {
+      "id": 246,
+      "origin_id": -10,
+      "origin_slot": 6,
+      "target_id": 145,
       "target_slot": 0,
       "type": "INT"
      }
