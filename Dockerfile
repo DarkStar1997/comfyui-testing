@@ -40,10 +40,13 @@ RUN git clone --depth 1 --branch 1.26.0 \
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r comfyui-crystools/requirements.txt
 
+# tiny VIDEO-passthrough node that unloads models + frees VRAM/RAM between workflow stages
+COPY freemem_node /ComfyUI/custom_nodes/freemem_node
+
 # ---------- runtime ----------
 WORKDIR /ComfyUI
 ENV PYTHONUNBUFFERED=1 HF_HOME=/ComfyUI/hf-cache
 EXPOSE 8188
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request as u,sys; sys.exit(0 if u.urlopen('http://127.0.0.1:8188/',timeout=5).status==200 else 1)"
-CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188", "--enable-manager", "--use-sage-attention", "--fast-disk"]
+CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188", "--enable-manager", "--use-sage-attention", "--fast-disk", "--cache-ram", "6", "10"]
