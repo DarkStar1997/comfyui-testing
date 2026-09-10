@@ -1,0 +1,10 @@
+.env
+.venv
+.git
+models
+output
+input
+user
+hf-cache
+__pycache__
+*.pyc
