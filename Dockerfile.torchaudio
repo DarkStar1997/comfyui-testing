@@ -2,6 +2,7 @@
 FROM pytorch/pytorch:2.14.0-cuda13.2-cudnn9-devel
 
 ARG TORCHAUDIO_VERSION=2.11.0
+ARG SAGEATTENTION_VERSION=v2.2.0-windows.post6
 ARG TORCH_CUDA_ARCH_LIST=8.9
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,3 +18,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     && cd /tmp/audio \
     && pip wheel --no-deps --no-build-isolation --wheel-dir /dist . \
     && rm -rf /tmp/audio
+
+# NVCC_APPEND_FLAGS: -DUSE_CUDA needed on Linux (setup.py only sets it on Windows;
+# torch>=2.14 shim.h guards aoti_torch_* declarations behind USE_CUDA)
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install pybind11 \
+    && git clone --depth 1 --branch ${SAGEATTENTION_VERSION} https://github.com/woct0rdho/SageAttention /tmp/sage \
+    && cd /tmp/sage \
+    && NVCC_APPEND_FLAGS="-DUSE_CUDA=1" pip wheel --no-deps --no-build-isolation --wheel-dir /dist . \
+    && rm -rf /tmp/sage

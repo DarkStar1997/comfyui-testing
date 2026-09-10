@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
-ARG TORCHAUDIO_WHEEL_IMAGE=comfyui-torchaudio:2.11.0
+ARG WHEELS_IMAGE=comfyui-wheels:2.14.0-cu132
 
-FROM ${TORCHAUDIO_WHEEL_IMAGE} AS torchaudio-wheels
+FROM ${WHEELS_IMAGE} AS wheels
 FROM pytorch/pytorch:2.14.0-cuda13.2-cudnn9-runtime
 
 ARG COMFYUI_VERSION=v0.35.0
@@ -18,9 +18,9 @@ ENV PATH=/opt/venv/bin:$PATH
 # ---------- ComfyUI: pinned clone + core deps ----------
 RUN git clone --depth 1 --branch ${COMFYUI_VERSION} https://github.com/Comfy-Org/ComfyUI /ComfyUI \
     && rm -rf /ComfyUI/.git
-COPY --from=torchaudio-wheels /dist/ /tmp/wheels/
+COPY --from=wheels /dist/ /tmp/wheels/
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install opencv-python==4.14.0.94 /tmp/wheels/torchaudio-*.whl \
+    pip install opencv-python==4.14.0.94 /tmp/wheels/torchaudio-*.whl /tmp/wheels/sageattention-*.whl \
     && pip install -r /ComfyUI/requirements.txt \
     && rm -rf /tmp/wheels
 
@@ -46,4 +46,4 @@ ENV PYTHONUNBUFFERED=1 HF_HOME=/ComfyUI/hf-cache
 EXPOSE 8188
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request as u,sys; sys.exit(0 if u.urlopen('http://127.0.0.1:8188/',timeout=5).status==200 else 1)"
-CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188", "--enable-manager"]
+CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188", "--enable-manager", "--use-sage-attention", "--fast-disk"]

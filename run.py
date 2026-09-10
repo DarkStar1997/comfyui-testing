@@ -58,6 +58,8 @@ def main() -> int:
         "--name", CONTAINER_NAME,
         "--gpus", "all",
         "--shm-size", "4g",
+        "--memory", "24g",
+        "--memory-swap", "24g",
         "--restart", "unless-stopped",
         "-p", f"{PORT}:8188",
         "-v", f"{REPO_DIR / 'models'}:/ComfyUI/models",

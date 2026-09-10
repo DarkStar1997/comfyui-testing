@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent
-WHEEL_IMAGE = "comfyui-torchaudio:2.11.0"
+WHEEL_IMAGE = "comfyui-wheels:2.14.0-cu132"
 IMAGE = "comfyui:2.14.0-cuda132-v0.35.0"
 DEFAULT_CUDA_ARCH = "8.9"
 
