@@ -103,6 +103,10 @@ class RandomSeed:
     FUNCTION = "randomize"
     CATEGORY = "utils"
 
+    @classmethod
+    def IS_CHANGED(cls, seed, enabled=True):
+        return float("NaN")
+
     def randomize(self, seed, enabled=True):
         import random
         if enabled:
