@@ -417,6 +417,13 @@ def extract_last_frame(mp4_name, png_name):
         sys.exit(f"last-frame extraction failed: {r.stderr[-500:]}")
 
 
+def extract_still(mp4_name, png_name, at="4"):
+    r = docker("ffmpeg", "-y", "-ss", at, "-i", f"/ComfyUI/output/video/{mp4_name}",
+               "-update", "1", "-frames:v", "1", f"/ComfyUI/input/{png_name}")
+    if r.returncode != 0:
+        sys.exit(f"still extraction failed: {r.stderr[-500:]}")
+
+
 def crop_to_canvas(src_name, dst_name):
     r = docker("ffmpeg", "-y", "-i", f"/ComfyUI/input/{src_name}",
                "-vf", f"scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,crop={WIDTH}:{HEIGHT}",
@@ -466,27 +473,39 @@ def buildPrompt(idx, total, cfg, refs):
 
     user_prompt = cfg["prompts"][min(idx, len(cfg["prompts"]) - 1)]
     if idx == 0:
-        tags = " ".join(f"<Picture {i + 1}> shows the main character."
-                        for i in range(len(refs) - 1, 0, -1))
+        parts = []
         if cfg["start_image"]:
             p["137"]["inputs"]["image"] = cfg["start_image"]
-            p["139"]["inputs"]["image"] = refs[-1]
-            text = f"The scene begins from <Picture 1>. {tags} {user_prompt}"
-        else:
+            parts.append("The scene begins from <Picture 1>.")
+            if refs:
+                p["139"]["inputs"]["image"] = refs[-1]
+                parts.append("<Picture 2> shows the main character.")
+        elif refs:
             p["137"]["inputs"]["image"] = refs[0]
             p["139"]["inputs"]["image"] = refs[-1]
-            text = f"{tags} {user_prompt}"
+            parts.append("<Picture 1> shows the main character.")
+        else:
+            del p["136"]["inputs"]["ref_images.ref_image_0"]
+            del p["136"]["inputs"]["ref_images.ref_image_1"]
+            del p["137"]
+            del p["139"]
+        text = " ".join(parts + [user_prompt])
     else:
         p["137"]["inputs"]["image"] = f'{cfg["name"]}_chunk{idx - 1:02d}_last.png'
-        p["139"]["inputs"]["image"] = refs[0]
-        text = (f"Continue the exact scene from <Picture 1> - same character, wardrobe, "
-                f"location, lighting and camera style, motion flowing seamlessly from that "
-                f"exact frame. <Picture 2> shows the main character for identity. {user_prompt}")
+        if refs:
+            p["139"]["inputs"]["image"] = refs[0]
+            ident = (" <Picture 2> is a close-up reference of the same man's face - the man in "
+                     "the video must look exactly like this person.")
+        else:
+            ident = ""
+        text = (f"Continue the exact scene from <Picture 1> - the EXACT SAME man, identical face, "
+                f"identical hair and identical clothes, same location, lighting and camera style, "
+                f"motion flowing seamlessly from that exact frame.{ident} {user_prompt}")
     p["138"]["inputs"]["value"] = text
 
     if cfg["chain_mode"] == "frame":
         p["127"]["inputs"]["unet_name"] = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
-        first = p["137"]["inputs"]["image"] if idx > 0 or cfg["start_image"] else None
+        first = p.get("137", {}).get("inputs", {}).get("image") if idx > 0 or cfg["start_image"] else None
         if idx > 0 or cfg["start_image"]:
             p["136"] = {
                 "class_type": "MiniMaxH3ImageToVideo",
@@ -508,31 +527,53 @@ def main():
     args = parser.parse_args()
 
     cfg = {
-        "name": "coffee20",
-        "total_duration_s": 20,
-        "base_seed": 20260911,
+        "name": "anime30",
+        "total_duration_s": 30,
+        "base_seed": 20260912,
         "prompts": [
-            ("Photorealistic scene at a calm, unhurried pace in a small restaurant kitchen. A young "
-             "chef in a white apron works at a relaxed, deliberate speed, each movement slow and "
-             "controlled. The chef is COMPLETELY ALONE in the kitchen - exactly one person in the "
-             "entire scene, no other chefs, no background staff, no customers, nobody else visible "
-             "anywhere. Every hand movement is anatomically correct and physically plausible - "
-             "natural fingers, wrists bending the right way, realistic grasp when holding pans and "
-             "utensils. 0-4s: he calmly stirs a pan and checks a pot, composed and focused. "
-             "4-7s: stepping across the kitchen he plants his foot on a wet mop and slips, falling "
-             "gently onto his back. 7-10s: a slice of bread pops from the toaster with a soft ding "
-             "as he props himself up. Camera: smooth, very slow tracking shot, fixed during the "
-             "slip. Audio: soft kitchen ambience, light sizzling, a soft thud, toaster ding."),
-            ("The chef remains COMPLETELY ALONE - exactly one person in frame, no other chefs, no "
-             "background staff, nobody else appears. All movements stay anatomically correct and "
-             "physically realistic - hands and wrists bend naturally, plates and cups are held with "
-             "a correct, comfortable grip. 0-5s: the chef gets to his feet, dusts himself off and "
-             "pours a fresh cup of coffee. 5-10s: he leans against the counter, sips slowly and "
-             "relaxes with a satisfied smile as the morning rush settles around him. Camera: gentle "
-             "medium close-up. Audio: soft kitchen ambience and a contented sip."),
+            ("Detailed Studio Ghibli style hand-painted anime film, soft watercolor backgrounds, "
+             "warm saturated summer light, gentle calm pacing. A middle-aged man with kind tired "
+             "eyes, slightly greying hair and modest worn clothes buys groceries from a street "
+             "green grocer's stall and carries a heavy cloth bag. 0-2.5s: at the green grocer's "
+             "vegetable stall he picks fresh vegetables, pays the grocer a few small coins from "
+             "his worn wallet, and places the vegetables into his heavy cloth bag. 2.5-4s: he "
+             "walks on through the bustling marketplace under the scorching bright sun, sweat on "
+             "his brow, cicadas humming, the heavy bag in one hand. 4-7s: he stops at a small ice "
+             "cream vendor cart - the man himself opens HIS OWN worn wallet to pay and it is "
+             "COMPLETELY EMPTY, not a single coin left; he looks at it with gentle embarrassment. "
+             "IMPORTANT: only the MAN opens his own wallet; the kind vendor woman never opens a "
+             "wallet, never holds or shows any money. 7-10s: the kind vendor woman notices his "
+             "empty wallet, smiles warmly, gently waves her hand and hands him a vanilla ice "
+             "cream cone, softly saying 'another time' - meaning he may pay another time; the man "
+             "accepts happily with a grateful smile, his face clearly visible in warm light. "
+             "Camera: gentle side tracking, then a soft medium close-up of his grateful face. "
+             "Audio: lively market chatter, cicadas, warm gentle strings."),
+            ("Detailed Studio Ghibli style hand-painted anime continuation. The EXACT SAME "
+             "middle-aged man from the previous scene - identical face, same kind tired eyes, "
+             "same slightly greying hair, same modest worn clothes - now carrying his heavy cloth "
+             "bag of groceries and the vanilla ice cream cone, walks happily home along a dusty "
+             "rural countryside road in golden late-afternoon light, green rice paddies, "
+             "wildflowers and distant blue mountains all around him. 0-5s: peaceful unhurried "
+             "walk, a gentle breeze moving the grass, he takes small happy bites of the ice "
+             "cream. 5-10s: he reaches his modest rural house with a tiled roof, opens the wooden "
+             "front door, and his two children - a young son and a young daughter - rush out "
+             "joyfully to greet him; he kneels down and hugs them both tightly, all three "
+             "smiling with joy. Camera: wide scenic panorama, then a warm medium shot of the hug "
+             "at the door. Audio: birds, soft wind through grass, children laughing."),
+            ("Detailed Studio Ghibli style hand-painted anime continuation. The EXACT SAME "
+             "middle-aged man - identical face, same kind tired eyes, same slightly greying "
+             "hair, same modest worn clothes - and his two children in their modest rural home. "
+             "0-4s: inside the humble cozy kitchen the man washes rice and fresh vegetables at a "
+             "basin, then cooks a simple meal of rice and vegetables in a pot, soft steam rising, "
+             "warm lantern light. 4-8s: he serves the freshly cooked food into bowls and lovingly "
+             "feeds his two children, who eat happily with bright smiles at the small family "
+             "table. 8-10s: the camera very slowly zooms in on the man's satisfied gentle face as "
+             "he watches them eat, a warm content smile, soft golden light on his face, the movie "
+             "gently coming to an end. Camera: calm fixed shots then the slow zoom on his face. "
+             "Audio: gentle kitchen sounds, soft tender piano."),
         ],
-        "ref_images": ["coffee_chef_still.png"],
-        "start_image": "coffee_open_still.png",
+        "ref_images": [],
+        "start_image": None,
         "chain_mode": args.chain_mode,
     }
 
@@ -561,6 +602,11 @@ def main():
         last_png = f'{cfg["name"]}_chunk{i:02d}_last.png'
         if not (INPUT_DIR / last_png).is_file():
             extract_last_frame(existing.name, last_png)
+        char_png = f'{cfg["name"]}_char.png'
+        if i == 0 and not cfg["ref_images"]:
+            if not (INPUT_DIR / char_png).is_file():
+                extract_still(existing.name, char_png, at="9")
+            cfg["ref_images"] = [char_png]
 
     list_file = f'{cfg["name"]}_list.txt'
     entries = "\n".join(f"file '{o}'" for o in outputs) + "\n"
