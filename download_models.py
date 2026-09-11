@@ -10,6 +10,7 @@ FILES = [
     ("Comfy-Org/MiniMax-H3", "loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"),
     ("Comfy-Org/SeedVR2", "diffusion_models/seedvr2_7b_int8_convrot.safetensors"),
     ("Comfy-Org/SeedVR2", "vae/seedvr2_ema_vae_fp16.safetensors"),
+    ("fal/MiniMax-H3-Realism-People-LoRA", "loras/h3-realism-people-t2v-i2v-r2v.safetensors"),
 ]
 
 MODEL_DIR = "/ComfyUI/models"

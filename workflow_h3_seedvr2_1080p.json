@@ -280,7 +280,7 @@
     "previewExposures": []
    },
    "widgets_values": [
-    "Photorealistic coffee commercial, warm cinematic look, natural window light, shallow depth of field, anamorphic lens, subtle film grain.\n\nScene overview: in a bright modern office, a young male software engineer wearing glasses works at his laptop, code visible on screen. His toaster pops up golden toast, he takes it, then savors his coffee - and the ideas start flowing.\n\n0-3s: establishing shot, he types thoughtfully, a fresh brew steaming beside the laptop.\n3-6s: close-up - the toaster pops the toast up with a cheerful ding, he picks it up, takes a bite, smiles.\n6-10s: he takes his first sip of coffee, eyes light up, camera slowly pushes in as diagrams and ideas seem to spark - he leans in and codes with new energy.\n\nCamera: slow dolly-in on the sip moment, gentle rack focus between toast, cup and face.\nAudio: soft lo-fi beat, keyboard taps, toaster ding, a satisfied exhale, an uplifting musical swell at the end.",
+    "r34l1sm, Photorealistic coffee commercial, warm cinematic look, natural window light, shallow depth of field, anamorphic lens, subtle film grain.\n\nScene overview: in a bright modern office, a young male software engineer wearing glasses works at his laptop, code visible on screen. His toaster pops up golden toast, he takes it, then savors his coffee - and the ideas start flowing.\n\n0-3s: establishing shot, he types thoughtfully, a fresh brew steaming beside the laptop.\n3-6s: close-up - the toaster pops the toast up with a cheerful ding, he picks it up, takes a bite, smiles.\n6-10s: he takes his first sip of coffee, eyes light up, camera slowly pushes in as diagrams and ideas seem to spark - he leans in and codes with new energy.\n\nCamera: slow dolly-in on the sip moment, gentle rack focus between toast, cup and face.\nAudio: soft lo-fi beat, keyboard taps, toaster ding, a satisfied exhale, an uplifting musical swell at the end.",
     1344,
     768,
     10,
@@ -4271,8 +4271,7 @@
         "name": "output",
         "type": "MODEL",
         "links": [
-         234,
-         241
+         247
         ]
        }
       ],
@@ -4523,6 +4522,46 @@
       },
       "widgets_values": [
        true
+      ]
+     },
+     {
+      "id": 146,
+      "type": "LoraLoaderModelOnly",
+      "pos": [
+       -100,
+       2600
+      ],
+      "size": [
+       427.2,
+       145.5
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+       {
+        "name": "model",
+        "type": "MODEL",
+        "link": 247
+       }
+      ],
+      "outputs": [
+       {
+        "name": "MODEL",
+        "type": "MODEL",
+        "links": [
+         234,
+         241
+        ],
+        "slot_index": 0
+       }
+      ],
+      "properties": {
+       "Node name for S&R": "LoraLoaderModelOnly"
+      },
+      "widgets_values": [
+       "h3-realism-people-t2v-i2v-r2v.safetensors",
+       1
       ]
      }
     ],
@@ -4839,7 +4878,7 @@
      },
      {
       "id": 234,
-      "origin_id": 135,
+      "origin_id": 146,
       "origin_slot": 0,
       "target_id": 124,
       "target_slot": 0,
@@ -4895,7 +4934,7 @@
      },
      {
       "id": 241,
-      "origin_id": 135,
+      "origin_id": 146,
       "origin_slot": 0,
       "target_id": 126,
       "target_slot": 0,
@@ -4932,6 +4971,14 @@
       "target_id": 145,
       "target_slot": 0,
       "type": "INT"
+     },
+     {
+      "id": 247,
+      "origin_id": 135,
+      "origin_slot": 0,
+      "target_id": 146,
+      "target_slot": 0,
+      "type": "MODEL"
      }
     ],
     "extra": {}
