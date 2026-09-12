@@ -7,11 +7,18 @@ import time
 import urllib.request
 from pathlib import Path
 
+from model_fetch import ensure_models
+
 SERVER = "http://localhost:8188"
 CONTAINER = "comfyui"
 UNET = "seedvr2_7b_int8_convrot.safetensors"
 VAE = "seedvr2_ema_vae_fp16.safetensors"
 SEED = 959948902156062
+
+MODELS = [
+    ("diffusion_models", "Comfy-Org/SeedVR2", f"diffusion_models/{UNET}"),
+    ("vae", "Comfy-Org/SeedVR2", f"vae/{VAE}"),
+]
 
 
 def api(path, data=None):
@@ -86,6 +93,8 @@ def main() -> int:
     parser.add_argument("--prefix", default="seedvr2_seg")
     parser.add_argument("--out", default="Upscaled_seedVR2_1080p.mp4")
     args = parser.parse_args()
+
+    ensure_models(MODELS)
 
     probe = subprocess.run(
         ["docker", "exec", CONTAINER, "ffprobe", "-v", "quiet", "-print_format", "json",

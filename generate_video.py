@@ -9,11 +9,28 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from model_fetch import ensure_models
+
 REPO_DIR = Path(__file__).resolve().parent
 INPUT_DIR = REPO_DIR / "input"
 OUTPUT_DIR = REPO_DIR / "output" / "video"
 HOST = "http://localhost:8188"
 CHUNK_SECONDS = 10
+
+MODELS = [
+    ("diffusion_models", "Comfy-Org/MiniMax-H3",
+     "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors"),
+    ("diffusion_models", "Comfy-Org/MiniMax-H3",
+     "diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors"),
+    ("text_encoders", "Comfy-Org/MiniMax-H3",
+     "text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"),
+    ("vae", "Comfy-Org/MiniMax-H3",
+     "vae/minimax_h3_video_vae_fp16.safetensors"),
+    ("vae", "Comfy-Org/MiniMax-H3",
+     "vae/minimax_h3_audio_vae_fp32.safetensors"),
+    ("loras", "Comfy-Org/MiniMax-H3",
+     "loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"),
+]
 WIDTH, HEIGHT = 1344, 768
 
 TEMPLATE = json.loads(r"""{
@@ -525,6 +542,8 @@ def main():
     parser.add_argument("--chain-mode", choices=["r2v", "frame"], default="r2v",
                         help="r2v: reference-conditioned continuation (default); frame: first-frame chaining")
     args = parser.parse_args()
+
+    ensure_models(MODELS)
 
     cfg = {
         "name": "anime30",
